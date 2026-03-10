@@ -66,7 +66,7 @@ class SpeechRecognizerService {
     required String apiKey,
     required String projectId,
     String location = 'global',
-    String? accessToken,
+    required String accessToken,
     Dio? dio,
   }) : _apiKey = apiKey,
        _projectId = projectId,
@@ -98,8 +98,8 @@ class SpeechRecognizerService {
   /// The processing location (`global`, `us`, `eu`, or a region).
   final String _location;
 
-  /// Optional OAuth2 Bearer token from a service account.
-  final String? _accessToken;
+  /// OAuth2 Bearer token from a service account.
+  final String _accessToken;
 
   /// The HTTP client used for all API calls.
   final Dio _dio;
@@ -116,7 +116,7 @@ class SpeechRecognizerService {
 
   /// Dio [Options] carrying the `Authorization` header when an access token
   /// is present, otherwise default options.
-  Options get _requestOptions => _accessToken != null
+  Options get _requestOptions => _accessToken.isNotEmpty
       ? Options(headers: {'Authorization': 'Bearer $_accessToken'})
       : Options();
 

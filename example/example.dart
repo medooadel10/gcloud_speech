@@ -38,8 +38,7 @@ Future<void> example1_minimalRealTime() async {
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
     speechConfig: const SpeechConfig(languageCode: 'en-US'),
-    accessToken:
-        null, // Optional OAuth token if using user credentials instead of API key.
+    accessToken: '',
   );
 
   // ── Step 2: Check microphone permission ──────────────────────────────────
@@ -98,6 +97,7 @@ Future<void> example2_afterRecording() async {
   final service = GCloudSpeech(
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
+    accessToken: '',
     speechConfig: const SpeechConfig(
       languageCode: 'en-US',
       enableAutomaticPunctuation: true,
@@ -149,6 +149,7 @@ Future<void> example3_recordOnly() async {
   final service = GCloudSpeech(
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
+    accessToken: '',
   );
 
   // `TranscriptionMode.none` — no PCM stream, no API calls.
@@ -173,6 +174,8 @@ Future<void> example4_pauseResume() async {
   final service = GCloudSpeech(
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
+    accessToken: '',
+
     speechConfig: const SpeechConfig(languageCode: 'en-US'),
   );
 
@@ -211,6 +214,8 @@ Future<void> example5_cancel() async {
   final service = GCloudSpeech(
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
+    accessToken: '',
+
     speechConfig: const SpeechConfig(languageCode: 'en-US'),
   );
 
@@ -342,6 +347,7 @@ Future<void> example6_fullConfig() async {
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
     speechConfig: speechConfig,
+    accessToken: '',
     recordingConfig: recordingConfig,
 
     // Optional error callback for non-fatal errors (e.g. a single chunk
@@ -399,6 +405,7 @@ Future<void> example7_arabicLanguage() async {
   final service = GCloudSpeech(
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
+    accessToken: '',
     speechConfig: const SpeechConfig(
       // Egyptian Arabic
       languageCode: 'ar-EG',
@@ -444,6 +451,7 @@ Future<void> example8_copyWith() async {
   final service = GCloudSpeech(
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
+    accessToken: '',
     speechConfig: fastConfig,
   );
 
@@ -468,6 +476,7 @@ Future<void> example9_longRecordingProgress() async {
   final service = GCloudSpeech(
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
+    accessToken: '',
     speechConfig: const SpeechConfig(
       languageCode: 'en-US',
       model: SpeechModel.latestLong,

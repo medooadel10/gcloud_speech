@@ -101,7 +101,7 @@ class GCloudSpeech {
     required String apiKey,
     required String projectId,
     String location = 'global',
-    String? accessToken,
+    required String accessToken,
     SpeechConfig? speechConfig,
     RecordingConfig? recordingConfig,
     this.onError,

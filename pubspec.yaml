@@ -5,7 +5,7 @@ description: >
   streaming transcription, and post-recording batch transcription with
   extensive configuration options.
 
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/medooadel10/gcloud_speech
 repository: https://github.com/medooadel10/gcloud_speech
 
