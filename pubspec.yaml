@@ -6,7 +6,8 @@ description: >
   extensive configuration options.
 
 version: 1.0.0
-publish_to: 'none'
+homepage: https://github.com/medooadel10/gcloud_speech
+repository: https://github.com/medooadel10/gcloud_speech
 
 environment:
   sdk: ^3.11.0
