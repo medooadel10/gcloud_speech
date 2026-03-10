@@ -140,9 +140,14 @@ class AudioRecorderService {
       final stream = await _streamRecorder.startStream(streamConfig);
 
       // Subscribe and funnel every chunk of bytes into our internal buffer.
-      _streamSub = stream.listen((bytes) {
-        _audioBuffer.addAll(bytes);
-      });
+      // cancelOnError: false ensures a transient stream error doesn't
+      // permanently kill the subscription and halt audio buffering.
+      _streamSub = stream.listen(
+        (bytes) => _audioBuffer.addAll(bytes),
+        onError: (Object e) =>
+            debugPrint('[AudioRecorderService] stream error: $e'),
+        cancelOnError: false,
+      );
     }
 
     // ── 7. Update state ──────────────────────────────────────────────────

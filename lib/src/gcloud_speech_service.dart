@@ -143,6 +143,16 @@ class GCloudSpeech {
   /// [TranscriptionMode.realTime].
   Timer? _chunkTimer;
 
+  /// Guard flag that prevents concurrent chunk-processing calls.
+  ///
+  /// `Timer.periodic` fires on a fixed interval regardless of whether the
+  /// previous async callback has completed. Without this flag, if an API call
+  /// takes longer than [SpeechConfig.chunkIntervalMs], multiple
+  /// [_drainAndTranscribeChunk] calls run simultaneously: the second one
+  /// drains an already-empty buffer and produces nothing, making the
+  /// transcript appear to stop.
+  bool _isProcessingChunk = false;
+
   // ── Transcription mode for the current session ─────────────────────────────
 
   /// The transcription mode chosen when [startRecording] was called.
@@ -436,7 +446,17 @@ class GCloudSpeech {
       // Don't send chunks while paused.
       if (_recorder.state.value != RecordingState.recording) return;
 
-      await _drainAndTranscribeChunk();
+      // Skip this tick if the previous API call hasn't finished yet.
+      // Without this guard, slow API responses cause concurrent drains:
+      // the second call sees an empty buffer and the live transcript stalls.
+      if (_isProcessingChunk) return;
+
+      _isProcessingChunk = true;
+      try {
+        await _drainAndTranscribeChunk();
+      } finally {
+        _isProcessingChunk = false;
+      }
     });
   }
 

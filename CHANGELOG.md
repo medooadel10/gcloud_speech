@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.3
+## 1.0.4
 
 - Initial release.
 - Audio recording support (start / pause / resume / stop).
