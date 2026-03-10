@@ -5,7 +5,7 @@ description: >
   streaming transcription, and post-recording batch transcription with
   extensive configuration options.
 
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/medooadel10/gcloud_speech
 repository: https://github.com/medooadel10/gcloud_speech
 
@@ -18,13 +18,13 @@ dependencies:
     sdk: flutter
 
   # HTTP client – used to call the Google Cloud Speech REST API.
-  dio: ^5.4.0
+  dio: ^5.9.2
 
   # Cross-platform audio recorder – provides both file and stream recording.
-  record: ^5.2.1
+  record: ^6.2.0
 
   # Provides platform-appropriate directories (documents, temp, etc.).
-  path_provider: ^2.1.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
