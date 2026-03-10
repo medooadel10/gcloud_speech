@@ -25,10 +25,12 @@ enum SpeechModel {
   /// Optimised for video / high-fidelity audio.
   video('video'),
 
-  /// The default model.  Good general-purpose choice.
+  /// Legacy V1 model name. **Not available in the `global` location on V2.**
+  /// Use [latestShort] or [latestLong] instead.
   defaultModel('default'),
 
-  /// Best for short commands and voice search.
+  /// Legacy V1 model. **Not available in the `global` location on V2.**
+  /// Use [latestShort] instead.
   commandAndSearch('command_and_search'),
 
   /// Medical dictation model (requires allowlisting).
@@ -190,7 +192,7 @@ class SpeechConfig {
     this.enableSpokenEmojis = false,
 
     // ── Model ─────────────────────────────────────────────────────────────
-    this.model = SpeechModel.defaultModel,
+    this.model = SpeechModel.latestShort,
 
     // ── Decoding ──────────────────────────────────────────────────────────
     this.autoDecoding = false,
