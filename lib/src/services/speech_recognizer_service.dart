@@ -30,6 +30,11 @@ import '../models/word_info.dart';
 
 /// Communicates with Google Cloud Speech-to-Text **V2** REST endpoints.
 ///
+/// Supports two authentication modes (can be combined):
+/// * **API key** – pass [apiKey]; appended as `?key=` on every request.
+/// * **Service account** – pass [accessToken] (a short-lived OAuth2 Bearer
+///   token); sent as `Authorization: Bearer <token>` on every request.
+///
 /// Two main operations:
 ///
 /// | Method                 | API endpoint                     | Use-case       |
@@ -40,21 +45,33 @@ import '../models/word_info.dart';
 class SpeechRecognizerService {
   /// Creates a [SpeechRecognizerService].
   ///
-  /// * [apiKey]    – Your Google Cloud API key with the Speech-to-Text API
-  ///                enabled.
-  /// * [projectId] – Your Google Cloud project ID (e.g. `'my-project-123'`).
-  /// * [location]  – Processing location. Defaults to `'global'`.
-  ///                Other options: `'us'`, `'eu'`, or a specific region like
-  ///                `'us-central1'`.
-  /// * [dio]       – An optional pre-configured [Dio] instance.
+  /// * [apiKey]      – Google Cloud API key (pass an empty string when using
+  ///                   [accessToken] only).
+  /// * [projectId]   – Your Google Cloud project ID (e.g. `'my-project-123'`).
+  /// * [location]    – Processing location. Defaults to `'global'`.
+  ///                  Other options: `'us'`, `'eu'`, or a specific region like
+  ///                  `'us-central1'`.
+  /// * [accessToken] – A short-lived OAuth2 Bearer token obtained from a
+  ///                  Google Cloud service account.  When provided it is sent
+  ///                  in the `Authorization: Bearer` header, which grants the
+  ///                  full IAM permissions of the service account (required for
+  ///                  V2 `speech.recognizers.recognize` permission).
+  ///                  Obtain one via `googleapis_auth`:
+  ///                  ```dart
+  ///                  final client = await clientViaServiceAccount(credentials, scopes);
+  ///                  final token = client.credentials.accessToken.data;
+  ///                  ```
+  /// * [dio]         – An optional pre-configured [Dio] instance.
   SpeechRecognizerService({
     required String apiKey,
     required String projectId,
     String location = 'global',
+    String? accessToken,
     Dio? dio,
   }) : _apiKey = apiKey,
        _projectId = projectId,
        _location = location,
+       _accessToken = accessToken,
        _dio = dio ?? Dio();
 
   // ── Constants ──────────────────────────────────────────────────────────────
@@ -72,7 +89,7 @@ class SpeechRecognizerService {
 
   // ── Internals ──────────────────────────────────────────────────────────────
 
-  /// The Google Cloud API key.
+  /// The Google Cloud API key (may be empty when using [_accessToken] only).
   final String _apiKey;
 
   /// The Google Cloud project ID.
@@ -81,12 +98,27 @@ class SpeechRecognizerService {
   /// The processing location (`global`, `us`, `eu`, or a region).
   final String _location;
 
+  /// Optional OAuth2 Bearer token from a service account.
+  final String? _accessToken;
+
   /// The HTTP client used for all API calls.
   final Dio _dio;
 
   /// Builds the V2 recognizer resource path.
   String get _recognizerPath =>
       'projects/$_projectId/locations/$_location/recognizers/_';
+
+  /// Query parameters added to every request.
+  ///
+  /// Includes `key` only when an API key was provided.
+  Map<String, dynamic>? get _queryParams =>
+      _apiKey.isNotEmpty ? {'key': _apiKey} : null;
+
+  /// Dio [Options] carrying the `Authorization` header when an access token
+  /// is present, otherwise default options.
+  Options get _requestOptions => _accessToken != null
+      ? Options(headers: {'Authorization': 'Bearer $_accessToken'})
+      : Options();
 
   // ── Public API ─────────────────────────────────────────────────────────────
 
@@ -126,7 +158,8 @@ class SpeechRecognizerService {
       // ── 3. POST to V2 recognize endpoint ──────────────────────────────
       final response = await _dio.post<Map<String, dynamic>>(
         '$_baseUrl/$_recognizerPath:recognize',
-        queryParameters: {'key': _apiKey},
+        queryParameters: _queryParams,
+        options: _requestOptions,
         data: body,
       );
 
@@ -199,7 +232,8 @@ class SpeechRecognizerService {
 
       final response = await _dio.post<Map<String, dynamic>>(
         '$_baseUrl/$_recognizerPath:recognize',
-        queryParameters: {'key': _apiKey},
+        queryParameters: _queryParams,
+        options: _requestOptions,
         data: body,
       );
 
@@ -241,7 +275,8 @@ class SpeechRecognizerService {
 
       final startResponse = await _dio.post<Map<String, dynamic>>(
         '$_baseUrl/$_recognizerPath:batchRecognize',
-        queryParameters: {'key': _apiKey},
+        queryParameters: _queryParams,
+        options: _requestOptions,
         data: body,
       );
 
@@ -288,7 +323,8 @@ class SpeechRecognizerService {
         // resource path, so we use it directly.
         final response = await _dio.get<Map<String, dynamic>>(
           '$_baseUrl/$operationName',
-          queryParameters: {'key': _apiKey},
+          queryParameters: _queryParams,
+          options: _requestOptions,
         );
 
         final data = response.data;

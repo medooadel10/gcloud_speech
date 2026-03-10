@@ -38,6 +38,8 @@ Future<void> example1_minimalRealTime() async {
     apiKey: 'YOUR_GOOGLE_CLOUD_API_KEY',
     projectId: 'YOUR_PROJECT_ID',
     speechConfig: const SpeechConfig(languageCode: 'en-US'),
+    accessToken:
+        null, // Optional OAuth token if using user credentials instead of API key.
   );
 
   // ── Step 2: Check microphone permission ──────────────────────────────────

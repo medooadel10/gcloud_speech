@@ -72,12 +72,23 @@ import 'services/speech_recognizer_service.dart';
 class GCloudSpeech {
   /// Creates a [GCloudSpeech].
   ///
-  /// * [apiKey]          – **Required**. Your Google Cloud API key with the
-  ///                       Speech-to-Text API enabled.
+  /// * [apiKey]          – Your Google Cloud API key with the Speech-to-Text
+  ///                       API enabled (pass an empty string when using
+  ///                       [accessToken] only).
   /// * [projectId]       – **Required**. Your Google Cloud project ID
   ///                       (e.g. `'my-project-123'`).
   /// * [location]        – Processing location. Defaults to `'global'`.
   ///                       Other options: `'us'`, `'eu'`, or a specific region.
+  /// * [accessToken]     – An optional OAuth2 Bearer token obtained from a
+  ///                       Google Cloud **service account**.  Required when
+  ///                       using the V2 API, which enforces IAM permissions
+  ///                       (`speech.recognizers.recognize`). Obtain via
+  ///                       `googleapis_auth`:
+  ///                       ```dart
+  ///                       final client = await clientViaServiceAccount(
+  ///                         credentials, ['https://www.googleapis.com/auth/cloud-platform']);
+  ///                       final token = client.credentials.accessToken.data;
+  ///                       ```
   /// * [speechConfig]    – Configuration for the Speech API (language, model,
   ///                       punctuation, etc.). Defaults to `en-US` with
   ///                       automatic punctuation.
@@ -90,6 +101,7 @@ class GCloudSpeech {
     required String apiKey,
     required String projectId,
     String location = 'global',
+    String? accessToken,
     SpeechConfig? speechConfig,
     RecordingConfig? recordingConfig,
     this.onError,
@@ -100,11 +112,13 @@ class GCloudSpeech {
        // Store the provided RecordingConfig or fall back to a sensible default.
        _recordingConfig = recordingConfig ?? const RecordingConfig(),
 
-       // Create the lower-level recogniser with the API key and project.
+       // Create the lower-level recogniser with the API key, optional bearer
+       // token, and project details.
        _recognizer = SpeechRecognizerService(
          apiKey: apiKey,
          projectId: projectId,
          location: location,
+         accessToken: accessToken,
        );
 
   // ── Configuration ──────────────────────────────────────────────────────────
